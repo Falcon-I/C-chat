@@ -1,4 +1,4 @@
-import time, socket, sys
+import time, socket, threading
 import tkinter.scrolledtext as st
 import tkinter as tk
 
@@ -28,17 +28,6 @@ def sends():
 
 
 
-
-def receive():
-    try:
-        client_message = soc.recv(1024)
-        fyclient_message = client_message.decode()
-        message_show.insert(tk.INSERT, server_name + " : " + fyclient_message + ".\n")
-    except:
-        message_show.insert(tk.INSERT, "Signal lost.....\n")
-
-
-
 root = tk.Tk()
 root.title("C-chat")
 screenwidth = root.winfo_screenwidth()
@@ -51,9 +40,25 @@ message_box = tk.Entry()
 message_box.place(x=300, y=650, width=600, height=40)
 send = tk.Button(text="Send", width=10, height=2, command=sends)
 send.place(x=910, y=650)
-receive = tk.Button(text="Receive", width=10, height=2, command=receive)
-receive.place(x=1290, y=0)
 
+
+
+
+def rec():
+    try:
+        while True:
+            client_message = soc.recv(1024)
+            fyclient_message = client_message.decode()
+            message_show.insert(tk.INSERT, server_name + " : " + fyclient_message + ".\n")
+    except:
+        message_show.insert(tk.INSERT, "Signal lost.....\n")
+
+
+try:
+    threading.Thread(target=rec).start()
+
+except:
+    message_show.insert(tk.INSERT, "Signal lost.....\n")
 
 
 
