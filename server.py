@@ -1,6 +1,6 @@
 import tkinter as tk
 import tkinter.scrolledtext as st
-import time, socket, sys, os
+import socket, threading
 
 soc = socket.socket()
 host_name = socket.gethostname()
@@ -12,6 +12,7 @@ soc.listen(100)
 connection, addr = soc.accept()
 client_name = connection.recv(1024)
 fyclient_name = client_name.decode()
+
 
 def start():
     try:
@@ -28,16 +29,6 @@ def sends():
         message_show.insert(tk.INSERT, "Signal lost. Can't send your message.\n")
 
 
-
-def receive():
-    try:
-        client_message = connection.recv(1024)
-        fyclient_message = client_message.decode()
-        message_show.insert(tk.INSERT, fyclient_name + " : " + fyclient_message + ".\n")
-    except:
-        message_show.insert(tk.INSERT, "Signal lost.....\n")
-
-
 root = tk.Tk()
 root.title("C-chat")
 screenwidth = root.winfo_screenwidth()
@@ -52,9 +43,23 @@ start = tk.Button(text="Start Server", width=10, height=2, command=start)
 start.place(x=0, y=0)
 send = tk.Button(text="Send", width=10, height=2, command=sends)
 send.place(x=910, y=650)
-receive = tk.Button(text="Receive", width=10, height=2, command=receive)
-receive.place(x=1290, y=0)
 
 
+def rec():
+    try:
+        while True:
+            client_message = connection.recv(1024)
+            fyclient_message = client_message.decode()
+            message_show.insert(tk.INSERT, fyclient_name + " : " + fyclient_message + ".\n")
+    except:
+        message_show.insert(tk.INSERT, "Signal lost.....\n")
+
+threading.Thread(target=rec).start()
+
+try:
+    threading.Thread(target=rec).start()
+
+except:
+    message_show.insert(tk.INSERT, "Signal lost.....\n")
 
 root.mainloop()
