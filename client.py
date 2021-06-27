@@ -11,7 +11,7 @@ name = input("your name :")
 port = 1234
 time.sleep(1)
 soc.connect((server_host, port))
-print("Conneteced")
+print("Connected")
 soc.send(name.encode())
 server_name = "Chaitu"
 
